@@ -1,5 +1,5 @@
 import struct
-
+import PyPDF2
 def file_type(file_path):
     file_type = {
         '005374616e646172' : 'AIB', 'FFD8FF' : 'JPEG/JPG',
@@ -18,7 +18,7 @@ def file_type(file_path):
         '2E7261FD': 'RAM', '2E524D46': 'RM',
         '000001BA': 'MPG', '000001B3': 'MPG',
         '6D6F6F76': 'MOV', '3026B2758E66CF11': 'ASF',
-        '4D546864': 'MID'
+        '4D546864': 'MID', '617364B0' : 'TXT'
     }
     def bytes2hex(bytes):
         hex_str = u""
@@ -31,7 +31,18 @@ def file_type(file_path):
 
     with open(file_path, 'rb') as bin_file:
         hex_str = bytes2hex(struct.unpack_from("B" * 20, bin_file.read(20)))
-        print(hex_str)
         for type in file_type:
             if type in hex_str:
                 return file_type[type]
+
+def is_valid_pdf(file_path):
+    res = True
+    try:
+        reader = PyPDF2.PdfFileReader(file_path)
+        if reader.getNumPages() < 1:
+            res = False
+    except:
+        res = False
+
+    return res
+
